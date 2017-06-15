@@ -47,6 +47,7 @@ class Authentication
         $token = $strategy->parse($token);
 
         $key = $this->keyProvider->get($token['key_id']);
+
         if (empty($key)) {
             throw new AuthException("Key id is not exist.", ErrorCode::INVALID_CREDENTIAL);
         }
