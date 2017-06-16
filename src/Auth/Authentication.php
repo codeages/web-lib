@@ -12,18 +12,18 @@ class Authentication
     protected $keyProvider;
 
     /**
-     * @var TokenFactory
+     * @var TokenAlgoFactory
      */
     protected $tokenFactory;
 
     protected $tokenHeaderKey = 'Authorization';
 
-    public function __construct(KeyProvider $keyProvider, TokenFactory $tokenFactory = null,  array $options = array())
+    public function __construct(KeyProvider $keyProvider, TokenAlgoFactory $tokenFactory = null, array $options = array())
     {
         $this->keyProvider = $keyProvider;
 
         if (empty($tokenFactory)) {
-            $tokenFactory = new TokenFactory();
+            $tokenFactory = new TokenAlgoFactory();
         }
         $this->tokenFactory = $tokenFactory;
 
@@ -46,23 +46,23 @@ class Authentication
 
         $token = $strategy->parse($token);
 
-        $key = $this->keyProvider->get($token['key_id']);
+        $key = $this->keyProvider->get($token->keyId);
 
         if (empty($key)) {
             throw new AuthException("Key id is not exist.", ErrorCode::INVALID_CREDENTIAL);
         }
 
-        $strategy->check($token, $key['key_secret'], $this->getRequestText($request));
+        $strategy->check($token, $key, $this->getRequestText($request));
 
-        if ($key['status'] == 'inactive') {
+        if ($key->isInactive()) {
             throw new AuthException("Key is banned.", ErrorCode::BANNED_CREDENTIALS);
         }
 
-        if ($key['status'] == 'deleted') {
+        if ($key->isDeleted()) {
             throw new AuthException("Key is deleted.", ErrorCode::BANNED_CREDENTIALS);
         }
 
-        if ($key['expired_time'] > 0 && $key['expired_time'] < time()) {
+        if ($key->isExpired()) {
             throw new AuthException("Key is expired.", ErrorCode::EXPIRED_CREDENTIAL);
         }
 

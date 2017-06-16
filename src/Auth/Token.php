@@ -1,9 +1,19 @@
 <?php
+
 namespace Codeages\Weblib\Auth;
 
-interface Token
+class Token
 {
-    public function parse($token);
+    public $keyId;
 
-    public function check($token, $secretKey = '', $signingText = '');
+    public $keySecret;
+
+    public $signature;
+
+    public function __construct($keyId, $keySecret = '', $signature = '')
+    {
+        $this->keyId = $keyId;
+        $this->keySecret = $keySecret;
+        $this->signature = $signature;
+    }
 }

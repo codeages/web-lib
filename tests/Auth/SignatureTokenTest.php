@@ -7,11 +7,11 @@ class SignatureTokenTest extends TestCase
 {
     public function testParse_GoodToken()
     {
-        $strategy = new SignatureToken();
+        $strategy = new SignatureTokenAlgo();
         $token = $strategy->parse('test_key_id:test_signature');
 
-        $this->assertEquals('test_key_id', $token['key_id']);
-        $this->assertEquals('test_signature', $token['signature']);
+        $this->assertEquals('test_key_id', $token->keyId);
+        $this->assertEquals('test_signature', $token->signature);
     }
 
     /**
@@ -19,7 +19,7 @@ class SignatureTokenTest extends TestCase
      */
     public function testParse_badTokenFormat1()
     {
-        $strategy = new SignatureToken();
+        $strategy = new SignatureTokenAlgo();
         $strategy->parse('test_key_id');
     }
 
@@ -28,7 +28,7 @@ class SignatureTokenTest extends TestCase
      */
     public function testParse_badTokenFormat2()
     {
-        $strategy = new SignatureToken();
+        $strategy = new SignatureTokenAlgo();
         $strategy->parse('test_key_id:');
     }
 
@@ -37,7 +37,7 @@ class SignatureTokenTest extends TestCase
      */
     public function testParse_badTokenFormat3()
     {
-        $strategy = new SignatureToken();
+        $strategy = new SignatureTokenAlgo();
         $strategy->parse('test_key_id:test_signature:other');
     }
 
@@ -45,18 +45,12 @@ class SignatureTokenTest extends TestCase
     {
         $signingText = "/me?t1=1&t2=2\n{\"test\":\"value\"}";
 
-        $key = array(
-            'key_id' => 'test_key_id',
-            'key_secret' => 'test_key_secret',
-        );
+        $key = new AccessKey('test_key_id', 'test_key_secret');
 
-        $token = array(
-            'key_id' => 'test_key_id',
-            'signature' => $this->makeSignature($signingText, $key['key_secret']),
-        );
+        $token = new Token('test_key_id', '', $this->makeSignature($signingText, $key->secret));
 
-        $strategy = new SignatureToken();
-        $checked = $strategy->check($token, $key['key_secret'], $signingText);
+        $strategy = new SignatureTokenAlgo();
+        $checked = $strategy->check($token, $key, $signingText);
 
         $this->assertTrue($checked);
     }
@@ -68,18 +62,12 @@ class SignatureTokenTest extends TestCase
     {
         $signingText = "/me?t1=1&t2=2\n{\"test\":\"value\"}";
 
-        $key = array(
-            'key_id' => 'test_key_id',
-            'key_secret' => 'test_key_secret',
-        );
+        $key = new AccessKey('test_key_id', 'test_key_secret');
 
-        $token = array(
-            'key_id' => 'test_key_id',
-            'signature' => $this->makeSignature($signingText, 'test_error_secret'),
-        );
+        $token = new Token('test_key_id', '', $this->makeSignature($signingText, 'test_error_secret'));
 
-        $strategy = new SignatureToken();
-        $strategy->check($token, $key['key_secret'], $signingText);
+        $strategy = new SignatureTokenAlgo();
+        $strategy->check($token, $key, $signingText);
     }
 
     /**
@@ -89,21 +77,12 @@ class SignatureTokenTest extends TestCase
     {
         $signingText = "/me?t1=1&t2=2\n{\"test\":\"value\"}";
 
-        $key = array(
-            'key_id' => 'test_key_id',
-            'key_secret' => 'test_key_secret',
-        );
+        $key = new AccessKey('test_key_id', 'test_key_secret');
 
-        $token = array(
-            'key_id' => 'test_key_id',
-            'signature' => $this->makeSignature($signingText, $key['key_secret']),
-        );
+        $token = new Token('test_key_id', '', $this->makeSignature($signingText, 'test_error_secret'));
 
-        $strategy = new SignatureToken();
-        $checked = $strategy->check($token, $key['key_secret'], '/error');
-
-        $this->assertTrue($checked);
-
+        $strategy = new SignatureTokenAlgo();
+        $strategy->check($token, $key, '/error');
     }
 
     protected function makeSignature($signingText, $secretKey)

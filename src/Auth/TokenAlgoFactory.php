@@ -1,17 +1,17 @@
 <?php
 namespace Codeages\Weblib\Auth;
 
-class TokenFactory
+class TokenAlgoFactory
 {
     /**
      *
      * @param $strategy
      *
-     * @return Token
+     * @return TokenAlgo
      */
     public function factory($strategy)
     {
-        $class = __NAMESPACE__ . "\\" . ucfirst($strategy).'Token';
+        $class = __NAMESPACE__ . "\\" . ucfirst($strategy).'TokenAlgo';
 
         return new $class();
     }

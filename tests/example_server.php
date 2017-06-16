@@ -13,7 +13,12 @@ $request = Request::createFromGlobals();
 
 try {
     $key = $authentication->auth($request);
-    echo json_encode($key);
+    echo json_encode(array(
+        'key_id' => $key->id,
+        'secret' => $key->secret,
+        'status' => $key->status,
+        'expired_time' => $key->expiredTime,
+    ));
 } catch(\Exception $e) {
     $error = array(
         'code' => $e->getCode(),
