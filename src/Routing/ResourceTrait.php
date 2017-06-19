@@ -4,7 +4,7 @@ namespace Codeages\Weblib\Routing;
 
 use Codeages\Weblib\Error\ResourceNotFoundException;
 
-abstract class AbstractResource
+trait ResourceTrait
 {
     abstract function getResource($name);
 
