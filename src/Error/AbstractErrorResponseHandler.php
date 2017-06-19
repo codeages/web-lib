@@ -2,9 +2,10 @@
 
 namespace Codeages\Weblib\Error;
 
+use Codeages\Weblib\Auth\AuthException;
 use Monolog\Logger;
 use Monolog\Processor\WebProcessor;
-use Codeages\Biz\Framework\Service\Exception\InvalidArgumentException;
+use Codeages\Biz\Framework\Service\Exception\InvalidArgumentException as ServiceInvalidArgumentException;
 use Codeages\Biz\Framework\Service\Exception\NotFoundException;
 use Codeages\Biz\Framework\Service\Exception\ServiceException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -37,7 +38,7 @@ abstract class AbstractErrorResponseHandler
         } elseif ((($e instanceof AuthException) || ($e instanceof ResourceException) || ($e instanceof ServiceException)) && ($e->getCode() > 0)) {
             $error = ['code' => $e->getCode(), 'message' => $e->getMessage()];
             $statusCode = 400;
-        } elseif ($e instanceof InvalidArgumentException) {
+        } elseif ($e instanceof ServiceInvalidArgumentException || $e instanceof \InvalidArgumentException) {
             $error = ['code' => ErrorCode::INVALID_ARGUMENT, 'message' => $e->getMessage()];
             $statusCode = 422;
         } else {

@@ -55,7 +55,7 @@ abstract class AbstractResource
         if (empty($condition['sort'])) {
             return array('created_time' => 'DESC');
         }
-        $orderBy = [];
+        $orderBy = array();
         foreach (explode(',', $condition['sort']) as $str) {
             if (strpos($str, '-') === 0) {
                 $orderBy[trim($str, '-')] = 'DESC';

@@ -18,13 +18,18 @@ class SignatureTokenAlgo implements TokenAlgo
 
     public function check(Token $token, AccessKey $key, $signingText = '')
     {
-        $signature = hash_hmac('sha1', $signingText, $key->secret, true);
-        $signature = str_replace(array('+', '/'), array('-', '_'), base64_encode($signature));
+        $signature = $this->signature($signingText, $key->secret);
 
         if (empty($token->signature) || $token->signature != $signature) {
             throw new AuthException("Signature is invalid.", ErrorCode::INVALID_CREDENTIAL);
         }
 
         return true;
+    }
+
+    public function signature($signingText, $secretKey)
+    {
+        $signature = hash_hmac('sha1', $signingText, $secretKey, true);
+        return  str_replace(array('+', '/'), array('-', '_'), base64_encode($signature));
     }
 }

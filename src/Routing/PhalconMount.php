@@ -41,8 +41,10 @@ class PhalconMount implements Mount
             }
 
             $uri = rtrim($provider->getEndpoint(), "\/").rtrim($uri, "\/");
+
             call_user_func([$collections[$controller], $method], $uri ? : '/', $action);
         }
+
 
         foreach ($collections as $collection) {
             $this->app->mount($collection);
