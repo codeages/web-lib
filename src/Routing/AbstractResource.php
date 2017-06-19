@@ -4,7 +4,7 @@ namespace Codeages\Weblib\Routing;
 
 use Codeages\Weblib\Error\ResourceNotFoundException;
 
-trait ResourceTrait
+abstract class AbstractResource
 {
     abstract function getResource($name);
 
@@ -40,20 +40,20 @@ trait ResourceTrait
             }
         }
 
-        return [
+        return array(
             'data' => $items,
-            'paging' => [
+            'paging' => array(
                 'total' => $total,
                 'start' => $start,
                 'limit' => $limit,
-            ],
-        ];
+            ),
+        );
     }
 
     protected function getOrderBy($condition)
     {
         if (empty($condition['sort'])) {
-            return ['created_time' => 'DESC'];
+            return array('created_time' => 'DESC');
         }
         $orderBy = [];
         foreach (explode(',', $condition['sort']) as $str) {
