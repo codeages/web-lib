@@ -12,6 +12,7 @@ class PhalconErrorResponseHandler extends AbstractErrorResponseHandler
 
         $response = new Response();
         $response->setStatusCode($error['http_code']);
+        $response->setContentType('application/json', 'UTF-8');
         $response->setContent(json_encode(array('error' => $error['error'])));
 
         return $response;
